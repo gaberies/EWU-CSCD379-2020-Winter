@@ -9,9 +9,9 @@ namespace SecretSanta.Data
         public string Title { get; set; }
         public IList<UserGroup> UserGroups { get; } = new List<UserGroup>();
 
-        public Group(string title)
-        {
-            Title = title ?? throw new ArgumentNullException(nameof(title));
+        public Group(string title)
+        {
+            Title = title ?? throw new ArgumentNullException(nameof(title));
         }
     }
 }
