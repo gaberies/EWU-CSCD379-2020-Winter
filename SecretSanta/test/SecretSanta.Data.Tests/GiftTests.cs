@@ -1,69 +1,47 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace SecretSanta.Data.Tests
 {
     [TestClass]
-    public class GiftTests : TestBase
+    public class GiftTests
     {
         [TestMethod]
-        public async Task Gift_CanBeSavedToDatabase()
+        public void Gift_CanBeCreate_AllPropertiesGetSet()
         {
             // Arrange
-            using (var dbContext = new ApplicationDbContext(Options))
-            {
-                dbContext.Gifts.Add(new Gift
-                {
-                    Title = "Ring Doorbell",
-                    Url = "www.ring.com",
-                    Description = "The doorbell that saw too much",
-                    User = new User("Inigo", "Montoya")
-                }); ;
-                await dbContext.SaveChangesAsync().ConfigureAwait(false);
-            }
-            // Act
-            // Assert
-            using (var dbContext = new ApplicationDbContext(Options))
-            {
-                var gifts = await dbContext.Gifts.ToListAsync();
+            Gift gift = new Gift(1, "Ring 2", "Amazing way to keep the creepers away", "www.ring.com", new User(1, "Inigo", "Montoya", new List<Gift>()));
 
-                Assert.AreEqual(1, gifts.Count);
-                Assert.AreEqual("Ring Doorbell", gifts[0].Title);
-                Assert.AreEqual("www.ring.com", gifts[0].Url);
-                Assert.AreEqual("The doorbell that saw too much", gifts[0].Description);
-            }
+            // Act
+
+            // Assert
+            Assert.AreEqual(1, gift.Id);
+            Assert.AreEqual("Ring 2", gift.Title);
+            Assert.AreEqual("Amazing way to keep the creepers away", gift.Description);
+            Assert.AreEqual("www.ring.com", gift.Url);
+            Assert.IsNotNull(gift.User);
         }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Gift_SetTitleToNull_ThrowsArgumentNullException()
         {
-            _ = new Gift
-            {
-                Title = null!
-            };
+            Gift gift = new Gift(1, null!, "Amazing way to keep the creepers away", "www.ring.com", new User(1, "Inigo", "Montoya", new List<Gift>()));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Gift_SetDescriptionToNull_ThrowsArgumentNullException()
         {
-            _ = new Gift
-            {
-                Description = null!
-            };
+            Gift gift = new Gift(1, "Ring 2", null!, "www.ring.com", new User(1, "Inigo", "Montoya", new List<Gift>()));
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Gift_SetUrlToNull_ThrowsArgumentNullException()
         {
-            _ = new Gift
-            {
-                Url = null!
-            };
+            Gift gift = new Gift(1, "Ring 2", "Amazing way to keep the creepers away", null!, new User(1, "Inigo", "Montoya", new List<Gift>()));
         }
     }
 }
