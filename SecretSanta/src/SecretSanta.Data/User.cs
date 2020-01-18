@@ -15,6 +15,7 @@ namespace SecretSanta.Data
         public IList<UserGroupRelationship> Relationship { get; set; }
         private User? Santa { get; set; }
 
+        
 
         
     }

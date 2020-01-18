@@ -4,8 +4,9 @@ using System.Text;
 
 namespace SecretSanta.Data
 {
-	class Group : FingerPrintEntityBase
+	public class Group : FingerPrintEntityBase
 	{
 		string Name;
+		public ICollection<UserGroupRelationship> Relationship { get; set; }
 	}
 }

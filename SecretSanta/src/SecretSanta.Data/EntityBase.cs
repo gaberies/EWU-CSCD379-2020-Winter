@@ -6,6 +6,6 @@ namespace SecretSanta.Data
 {
 	public class EntityBase
 	{
-		int Id { get; set; }
+		public int Id { get; set; }
 	}
 }

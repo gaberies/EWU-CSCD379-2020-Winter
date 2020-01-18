@@ -14,7 +14,7 @@ namespace SecretSanta.Data
         public string Url { get => _Url; set => _Url = value ?? throw new ArgumentNullException(nameof(Url)); }
         private string _Url = string.Empty;
         public User User { get; set; }
-        public ICollection<UserGroupRelationship> Relationship { get; }
+       
 
 
         
