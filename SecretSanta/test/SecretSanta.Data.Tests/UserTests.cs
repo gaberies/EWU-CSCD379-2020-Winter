@@ -93,7 +93,7 @@ namespace SecretSanta.Data.Tests
         }
 
         [TestMethod]
-        public async Task CreateAuthor_ShouldSetFingerPrintDataOnUpdate()
+        public async Task CreateUser_ShouldSetFingerPrintDataOnUpdate()
         {
             IHttpContextAccessor httpContextAccessor = Mock.Of<IHttpContextAccessor>(hta =>
                 hta.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == new Claim(ClaimTypes.NameIdentifier, "imontoya"));
