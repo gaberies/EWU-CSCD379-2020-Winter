@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -33,25 +32,24 @@ namespace SecretSanta.Data.Tests
         [TestInitialize]
         public void OpenConnection()
         {
-            SqliteConnection = new SqliteConnection("DataSource=:memory:");
-            SqliteConnection.Open();
+            this.SqliteConnection = new SqliteConnection("DataSource=:memory:");
+            this.SqliteConnection.Open();
 
-            Options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            this.Options = new DbContextOptionsBuilder<ApplicationDbContext>()
                 .UseSqlite(SqliteConnection)
                 .UseLoggerFactory(GetLoggerFactory())
                 .EnableSensitiveDataLogging()
                 .Options;
 
-            using (var context = new ApplicationDbContext(Options))
-            {
-                context.Database.EnsureCreated();
-            }
-        }
+            using var context = new ApplicationDbContext(Options);
+            context.Database.EnsureCreated();
 
+        }
+        
         [TestCleanup]
         public void CloseConnection()
         {
-            SqliteConnection.Close();
+            this.SqliteConnection.Close();
         }
     }
 }

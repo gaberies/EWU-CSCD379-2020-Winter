@@ -6,7 +6,7 @@ namespace SecretSanta.Data
 {
 	public class Group : FingerPrintEntityBase
 	{
-		string Name;
+		public string Name { get; set; }
 		public ICollection<UserGroupRelationship> Relationship { get; set; }
 	}
 }

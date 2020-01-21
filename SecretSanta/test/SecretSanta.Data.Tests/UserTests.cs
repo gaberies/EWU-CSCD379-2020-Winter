@@ -1,6 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,16 +24,16 @@ namespace SecretSanta.Data.Tests
                 var user = new User
                 {
                     FirstName = "Inigo",
-                    LastName = "Montoya",
+                    LastName = "Montoya"
                 };
-                applicationDbContext.Gifts.Add(user);
+                applicationDbContext.Users.Add(user);
 
                 var user2 = new User
                 {
                     FirstName = "Inigo",
-                    LastName = "Montoya",
+                    LastName = "Montoya"
                 };
-                applicationDbContext.Gifts.Add(user2);
+                applicationDbContext.Users.Add(user2);
 
                 await applicationDbContext.SaveChangesAsync();
 
@@ -42,50 +47,48 @@ namespace SecretSanta.Data.Tests
                 var user = await applicationDbContext.Users.Where(a => a.Id == userId).SingleOrDefaultAsync();
 
                 Assert.IsNotNull(user);
-                Assert.AreEqual("Inigo", user.FirstName);
+                Assert.AreEqual<string>("Inigo", user.FirstName);
             }
         }
 
         [TestMethod]
-        public async Task CreateAuthor_ShouldSetFingerPrintDataOnInitialSave()
+        public async Task CreateUser_ShouldSetFingerPrintDataOnInitialSave()
         {
             IHttpContextAccessor httpContextAccessor = Mock.Of<IHttpContextAccessor>(hta =>
                 hta.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == new Claim(ClaimTypes.NameIdentifier, "imontoya"));
 
-            int authorId = -1;
+            int userId = -1;
             // Arrange
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = new Author
+                var user = new User
                 {
                     FirstName = "Inigo",
                     LastName = "Montoya",
-                    Email = "inigo@montoya.me"
                 };
-                applicationDbContext.Authors.Add(author);
+                applicationDbContext.Users.Add(user);
 
-                var author2 = new Author
+                var user2 = new User
                 {
                     FirstName = "Inigo",
                     LastName = "Montoya",
-                    Email = "inigo@montoya.me"
                 };
-                applicationDbContext.Authors.Add(author2);
+                applicationDbContext.Users.Add(user2);
 
                 await applicationDbContext.SaveChangesAsync();
 
-                authorId = author.Id;
+                userId = user.Id;
             }
 
             // Act
             // Assert
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
+                var user = await applicationDbContext.Users.Where(a => a.Id == userId).SingleOrDefaultAsync();
 
-                Assert.IsNotNull(author);
-                Assert.AreEqual("imontoya", author.CreatedBy);
-                Assert.AreEqual("imontoya", author.ModifiedBy);
+                Assert.IsNotNull(user);
+                Assert.AreEqual<string>("imontoya", user.CreatedBy);
+                Assert.AreEqual<string>("imontoya", user.ModifiedBy);
             }
         }
 
@@ -95,29 +98,27 @@ namespace SecretSanta.Data.Tests
             IHttpContextAccessor httpContextAccessor = Mock.Of<IHttpContextAccessor>(hta =>
                 hta.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == new Claim(ClaimTypes.NameIdentifier, "imontoya"));
 
-            int authorId = -1;
+            int userId = -1;
             // Arrange
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = new Author
+                var user = new User
                 {
                     FirstName = "Inigo",
                     LastName = "Montoya",
-                    Email = "inigo@montoya.me"
                 };
-                applicationDbContext.Authors.Add(author);
+                applicationDbContext.Users.Add(user);
 
-                var author2 = new Author
+                var author2 = new User
                 {
                     FirstName = "Inigo",
                     LastName = "Montoya",
-                    Email = "inigo@montoya.me"
                 };
-                applicationDbContext.Authors.Add(author2);
+                applicationDbContext.Users.Add(author2);
 
                 await applicationDbContext.SaveChangesAsync();
 
-                authorId = author.Id;
+                userId = user.Id;
             }
 
             // Act
@@ -128,21 +129,22 @@ namespace SecretSanta.Data.Tests
             {
                 // Since we are pulling back the record from the database and making changes to it, we don't need to re-add it to the collection
                 // thus no Authors.Add call, that is only needed when new records are inserted
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
-                author.FirstName = "Princess";
-                author.LastName = "Buttercup";
+                var user = await applicationDbContext.Users.Where(a => a.Id == userId).SingleOrDefaultAsync();
+                user.FirstName = "Princess";
+                user.LastName = "Buttercup";
 
                 await applicationDbContext.SaveChangesAsync();
             }
             // Assert
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
+                var user = await applicationDbContext.Users.Where(a => a.Id == userId).SingleOrDefaultAsync();
 
-                Assert.IsNotNull(author);
-                Assert.AreEqual("imontoya", author.CreatedBy);
-                Assert.AreEqual("pbuttercup", author.ModifiedBy);
+                Assert.IsNotNull(user);
+                Assert.AreEqual("imontoya", user.CreatedBy);
+                Assert.AreEqual("pbuttercup", user.ModifiedBy);
             }
 
         }
     }
+}

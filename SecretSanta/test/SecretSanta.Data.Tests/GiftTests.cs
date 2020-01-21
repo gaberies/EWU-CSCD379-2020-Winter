@@ -2,8 +2,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using SecretSanta.Data;
-using SecretSanta.Data.Tests;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,148 +9,186 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BlogEngine.Data.Tests
+namespace SecretSanta.Data.Tests
 {
     [TestClass]
     public class GiftTests : TestBase
     {
         [TestMethod]
-        public async Task CreateAuthor_ShouldSaveIntoDatabase()
+        public async Task CreateGift_ShouldSaveIntoDatabase()
         {
             int giftId = -1;
+            int giftId2 = -1;
+            int userId = -1;
+            int userId2 = -1;
             // Arrange
             using (var applicationDbContext = new ApplicationDbContext(Options))
             {
-                var Gift = new Gift
+                var user = new User
                 {
-                    Title = "Inigo",
-                    Description = "Montoya",
-                    Url = "inigo@montoya.me"
+                    FirstName = "Tester",
+                    LastName = "Franklin"
+                };
+                applicationDbContext.Users.Add(user);
+
+                var user2 = new User
+                {
+                    FirstName = "Tester2",
+                    LastName = "Franklin2"
+                };
+                applicationDbContext.Users.Add(user2);
+
+                var gift = new Gift
+                {
+                    Title = "Gift",
+                    Description = "Des",
+                    Url = "inigo@montoya.me",
+                    User = user
 
                 };
-                applicationDbContext.Gifts.Add(Gift);
+                applicationDbContext.Gifts.Add(gift);
 
-                var Gift2 = new Gift
+                var gift2 = new Gift
                 {
-                    Title = "Inigo",
-                    Description = "Montoya",
-                    Url = "inigo@montoya.me"
-
+                    Title = "Gift2",
+                    Description = "Dec2",
+                    Url = "inigo@montoya.me.and.you",
+                    User = user
                 };
-                applicationDbContext.Gifts.Add(Gift2);
+
+                applicationDbContext.Gifts.Add(gift2);
 
                 await applicationDbContext.SaveChangesAsync();
 
-                giftId = Gift.Id;
-            }
+                userId = user.Id;
+                userId2 = user2.Id;
+                giftId = gift.Id;
+                giftId2 = gift2.Id;
+            };
 
             // act
             // assert
-            using (var applicationdbcontext = new applicationDbContext(Options))
+            using (var applicationdbcontext = new ApplicationDbContext(Options))
             {
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
+                var user = await applicationdbcontext.Users.Where(a => a.Id == userId).SingleOrDefaultAsync();
+                var user2 = await applicationdbcontext.Users.Where(a => a.Id == userId2).SingleOrDefaultAsync();
+                var gift = await applicationdbcontext.Gifts.Where(a => a.Id == giftId).SingleOrDefaultAsync();
+                var gift2 = await applicationdbcontext.Gifts.Where(a => a.Id == giftId2).SingleOrDefaultAsync();
 
-                Assert.IsNotNull(author);
-                Assert.AreEqual("Inigo", author.FirstName);
+                Assert.IsNotNull(gift);
+                Assert.AreEqual<string>("Gift", gift.Title);
+                Assert.AreEqual<string>("Des", gift.Description);
+                Assert.AreEqual<string>("inigo@montoya.me", gift.Url);
+                Assert.AreEqual<string>("Tester", user.FirstName);
+                Assert.AreEqual<string>("Franklin", user.LastName);
+
+                Assert.IsNotNull(gift2);
+                Assert.AreEqual<string>("Gift2", gift2.Title);
+                Assert.AreEqual<string>("Dec2", gift2.Description);
+                Assert.AreEqual<string>("inigo@montoya.me.and.you", gift2.Url);
+                Assert.AreEqual<string>("Tester2", user2.FirstName);
+                Assert.AreEqual<string>("Franklin2", user2.LastName);
             }
         }
 
+
         [TestMethod]
-        public async Task CreateAuthor_ShouldSetFingerPrintDataOnInitialSave()
+        public async Task CreateGift_ShouldSetFingerPrintDataOnInitialSave()
         {
             IHttpContextAccessor httpContextAccessor = Mock.Of<IHttpContextAccessor>(hta =>
                 hta.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == new Claim(ClaimTypes.NameIdentifier, "imontoya"));
 
-            int authorId = -1;
+            int giftId = -1;
             // Arrange
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = new Author
+                var gift = new Gift
                 {
-                    FirstName = "Inigo",
-                    LastName = "Montoya",
-                    Email = "inigo@montoya.me"
+                    Title = "Inigo",
+                    Description = "Montoya",
+                    Url = "inigo@montoya.me",
+                    User = new User()
                 };
-                applicationDbContext.Authors.Add(author);
+                applicationDbContext.Gifts.Add(gift);
 
-                var author2 = new Author
+                var gift2 = new Gift
                 {
-                    FirstName = "Inigo",
-                    LastName = "Montoya",
-                    Email = "inigo@montoya.me"
+                    Title = "Inigo",
+                    Description = "Montoya",
+                    Url = "inigo@montoya.me",
+                    User = new User()
                 };
-                applicationDbContext.Authors.Add(author2);
+                applicationDbContext.Gifts.Add(gift2);
 
                 await applicationDbContext.SaveChangesAsync();
 
-                authorId = author.Id;
+                giftId = gift.Id;
             }
 
             // Act
             // Assert
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
+                var gift = await applicationDbContext.Gifts.Where(a => a.Id == giftId).SingleOrDefaultAsync();
 
-                Assert.IsNotNull(author);
-                Assert.AreEqual("imontoya", author.CreatedBy);
-                Assert.AreEqual("imontoya", author.ModifiedBy);
+                Assert.IsNotNull(gift);
+                Assert.AreEqual("imontoya", gift.CreatedBy);
+                Assert.AreEqual("imontoya", gift.ModifiedBy);
             }
         }
 
         [TestMethod]
-        public async Task CreateAuthor_ShouldSetFingerPrintDataOnUpdate()
+        public async Task CreateGift_ShouldSetFingerPrintDataOnUpdate()
         {
             IHttpContextAccessor httpContextAccessor = Mock.Of<IHttpContextAccessor>(hta =>
                 hta.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == new Claim(ClaimTypes.NameIdentifier, "imontoya"));
 
-            int authorId = -1;
+            int giftId = -1;
             // Arrange
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = new Author
+                var gift = new Gift
                 {
-                    FirstName = "Inigo",
-                    LastName = "Montoya",
-                    Email = "inigo@montoya.me"
+                    Title = "Inigo",
+                    Description = "Montoya",
+                    Url = "inigo@montoya.me",
+                    User = new User()
                 };
-                applicationDbContext.Authors.Add(author);
+                applicationDbContext.Gifts.Add(gift);
 
-                var author2 = new Author
+                var gift2 = new Gift
                 {
-                    FirstName = "Inigo",
-                    LastName = "Montoya",
-                    Email = "inigo@montoya.me"
+                    Title = "Inigo",
+                    Description = "Montoya",
+                    Url = "inigo@montoya.me",
+                    User = new User()
                 };
-                applicationDbContext.Authors.Add(author2);
+                applicationDbContext.Gifts.Add(gift2);
 
                 await applicationDbContext.SaveChangesAsync();
 
-                authorId = author.Id;
+                giftId = gift.Id;
             }
 
             // Act
-            // change the user that is updating the record
             httpContextAccessor = Mock.Of<IHttpContextAccessor>(hta =>
                 hta.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier) == new Claim(ClaimTypes.NameIdentifier, "pbuttercup"));
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                // Since we are pulling back the record from the database and making changes to it, we don't need to re-add it to the collection
-                // thus no Authors.Add call, that is only needed when new records are inserted
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
-                author.FirstName = "Princess";
-                author.LastName = "Buttercup";
+                var gift = await applicationDbContext.Gifts.Where(a => a.Id == giftId).SingleOrDefaultAsync();
+                gift.Title = "Princess";
+                gift.Description = "Buttercup";
 
                 await applicationDbContext.SaveChangesAsync();
             }
             // Assert
             using (var applicationDbContext = new ApplicationDbContext(Options, httpContextAccessor))
             {
-                var author = await applicationDbContext.Authors.Where(a => a.Id == authorId).SingleOrDefaultAsync();
+                var gift = await applicationDbContext.Gifts.Where(a => a.Id == giftId).SingleOrDefaultAsync();
 
-                Assert.IsNotNull(author);
-                Assert.AreEqual("imontoya", author.CreatedBy);
-                Assert.AreEqual("pbuttercup", author.ModifiedBy);
+                Assert.IsNotNull(gift);
+                Assert.AreEqual("imontoya", gift.CreatedBy);
+                Assert.AreEqual("pbuttercup", gift.ModifiedBy);
             }
         }
     }
