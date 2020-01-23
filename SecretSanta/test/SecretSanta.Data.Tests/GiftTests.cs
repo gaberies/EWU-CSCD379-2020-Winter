@@ -191,5 +191,42 @@ namespace SecretSanta.Data.Tests
                 Assert.AreEqual("pbuttercup", gift.ModifiedBy);
             }
         }
+
+        [TestMethod]
+        public async Task AddGift_WithUser_ShouldCreateForeignRelationship()
+        {
+            var gift = new Gift
+            {
+                Title = "My Title",
+                Description = "my-title",
+                Url = "HereIsSomeBasicUrl",
+                ModifiedBy = "imontoya",
+                CreatedBy = "imontoya"
+            };
+            var user = new User
+            {
+                FirstName = "Inigo",
+                LastName = "Montoya",
+                CreatedBy = "imontoya",
+                ModifiedBy = "imontoya"
+            };
+            // Arrange
+            using (ApplicationDbContext dbContext = new ApplicationDbContext(Options))
+            {
+                gift.User = user;
+
+                dbContext.Gifts.Add(gift);
+
+                await dbContext.SaveChangesAsync();
+            }
+
+            using (ApplicationDbContext dbContext = new ApplicationDbContext(Options))
+            {
+                var gifts = await dbContext.Gifts.Include(p => p.User).ToListAsync();
+                Assert.AreEqual(1, gifts.Count);
+                Assert.AreEqual(gift.Title, gifts[0].Title);
+                Assert.AreNotEqual(0, gifts[0].UserId);
+            }
+        }
     }
 }
