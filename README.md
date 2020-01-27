@@ -3,6 +3,7 @@ Assignment1: [![Assignment1 Branch](https://dev.azure.com/hrich2/CSCD379-2020-Wi
 Assignment2: [![Assignment2 Branch](https://dev.azure.com/gries0360/CSCD379-2020/_apis/build/status/gaberies.EWU-CSCD379-2020-Winter?branchName=Assignment2)](https://dev.azure.com/gries0360/CSCD379-2020/_build/latest?definitionId=1&branchName=Assignment2)<br/>
 Assignment3: [![Assignment3 Branch](https://dev.azure.com/gries0360/CSCD379-2020/_apis/build/status/gaberies.EWU-CSCD379-2020-Winter?branchName=Assignment3)](https://dev.azure.com/gries0360/CSCD379-2020/_build/latest?definitionId=1&branchName=Assignment3)<br/>
 
+
 # Assignment
 
 See [Assignment3.md](Assignment3.md)
