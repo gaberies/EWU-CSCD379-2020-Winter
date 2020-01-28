@@ -16,5 +16,17 @@ namespace SecretSanta.Data
         public User User { get; set; }
 #nullable enable
         public int UserId { get; set; }
+
+        public Gift(string title, string description, string url, User user) : this(title, description, url)
+        {
+            User = user;
+        }
+
+        private Gift(string title, string description, string url)
+        {
+            Title = title;
+            Description = description;
+            Url = url;
+        }
     }
 }

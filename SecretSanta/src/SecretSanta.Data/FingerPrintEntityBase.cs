@@ -6,9 +6,29 @@ namespace SecretSanta.Data
 {
     public class FingerPrintEntityBase : EntityBase
     {
-        public string CreatedBy { get; set; } = "";
-        public DateTime CreatedOn { get; set; }
-        public string ModifiedBy { get; set; } = "";
-        public DateTime ModifiedOn { get; set; }
+        private string _CreatedBy = "<Invalid>";
+        public string CreatedBy
+        {
+            get => _CreatedBy;
+            set => _CreatedBy = value;
+        }
+        private DateTime _CreatedOn;
+        public DateTime CreatedOn
+        {
+            get => _CreatedOn;
+            set => _CreatedOn = value;
+        }
+        private string _ModifiedBy = "<Invalid>";
+        public string ModifiedBy
+        {
+            get => _ModifiedBy;
+            set => _ModifiedBy = value;
+        }
+        private DateTime _ModifiedOn;
+        public DateTime ModifiedOn
+        {
+            get => _ModifiedOn;
+            set => _ModifiedOn = value;
+        }
     }
 }
