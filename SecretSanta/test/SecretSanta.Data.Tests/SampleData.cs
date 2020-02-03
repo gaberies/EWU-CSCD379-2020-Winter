@@ -1,6 +1,6 @@
 ﻿namespace SecretSanta.Data.Tests
 {
-    class SampleData
+    static public class SampleData
     {
 
         public const string Inigo = "Inigo";

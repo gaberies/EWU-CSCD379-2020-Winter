@@ -1,10 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecretSanta.Api.Controllers;
-using SecretSanta.Business.Services;
+using SecretSanta.Business;
 using SecretSanta.Data;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
+using SecretSanta.Data.Tests;
 
 namespace SecretSanta.Api.Tests.Controllers
 {
@@ -46,7 +48,7 @@ namespace SecretSanta.Api.Tests.Controllers
             var controller = new UserController(service);
 
             // Act
-            ActionResult<User> rv = await controller.Get(author.Id!.Value);
+            ActionResult<User> rv = await controller.Get(author.Id);
 
             // Assert
             Assert.IsTrue(rv.Result is OkObjectResult);
@@ -54,44 +56,44 @@ namespace SecretSanta.Api.Tests.Controllers
 
     }
 
-    public class AuthorService : IAuthorService
+    public class UserService : IUserService
     {
-        private Dictionary<int, Author> Items { get; } = new Dictionary<int, Author>();
+        private Dictionary<int, User> Items { get; } = new Dictionary<int, User>();
 
         public Task<bool> DeleteAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Author>> FetchAllAsync()
+        public Task<List<User>> FetchAllAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<Author?> FetchByIdAsync(int id)
+        public Task<User?> FetchByIdAsync(int id)
         {
-            if (Items.TryGetValue(id, out Author? author))
+            if (Items.TryGetValue(id, out User? user))
             {
-                Task<Author?> t1 = Task.FromResult<Author?>(author);
+                Task<User?> t1 = Task.FromResult<User?>(user);
                 return t1;
             }
-            Task<Author?> t2 = Task.FromResult<Author?>(null);
+            Task<User?> t2 = Task.FromResult<User?>(null);
             return t2;
         }
 
-        public Task<Author> InsertAsync(Author entity)
+        public Task<User> InsertAsync(User entity)
         {
             int id = Items.Count + 1;
-            Items[id] = new TestAuthor(entity, id);
+            Items[id] = new TestUser(entity, id);
             return Task.FromResult(Items[id]);
         }
 
-        public Task<Author[]> InsertAsync(params Author[] entity)
+        public Task<User[]> InsertAsync(params User[] entity)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Author?> UpdateAsync(int id, Author entity)
+        public Task<User?> UpdateAsync(int id, User entity)
         {
             throw new NotImplementedException();
         }
