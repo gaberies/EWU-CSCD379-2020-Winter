@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SecretSanta.Business;
+using SecretSanta.Business.Services;
+using SecretSanta.Data;
 
 namespace SecretSanta.Api.Controllers
 {
@@ -11,39 +14,39 @@ namespace SecretSanta.Api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private IAuthorService AuthorService { get; }
+        private IUserService UserService { get; }
 
-        public AuthorController(IAuthorService authorService)
+        public UserController(IUserService userService)
         {
-            AuthorService = authorService ?? throw new System.ArgumentNullException(nameof(authorService));
+            UserService = userService ?? throw new System.ArgumentNullException(nameof(userService));
         }
 
-        // GET: https://localhost/api/Author
+        // GET: https://localhost/api/User
         [HttpGet]
-        public async Task<IEnumerable<Author>> Get()
+        public async Task<IEnumerable<User>> Get()
         {
-            List<Author> authors = await AuthorService.FetchAllAsync();
-            return authors;
+            List<User> users = await UserService.FetchAllAsync();
+            return users;
         }
 
         // GET: api/Author/5
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Author>> Get(int id)
+        public async Task<ActionResult<User>> Get(int id)
         {
-            if (await AuthorService.FetchByIdAsync(id) is Author author)
+            if (await UserService.FetchByIdAsync(id) is User user)
             {
-                return Ok(author);
+                return Ok(user);
             }
             return NotFound();
         }
 
         // POST: api/Author
         [HttpPost]
-        public async Task<Author> Post(Author value)
+        public async Task<User> Post(User value)
         {
-            return await AuthorService.InsertAsync(value);
+            return await UserService.InsertAsync(value);
         }
 
         // PUT: api/Author/5
@@ -51,9 +54,9 @@ namespace SecretSanta.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesDefaultResponseType]
-        public async Task<ActionResult<Author>> Put(int id, Author value)
+        public async Task<ActionResult<User>> Put(int id, User value)
         {
-            if (await AuthorService.UpdateAsync(id, value) is Author author)
+            if (await UserService.UpdateAsync(id, value) is User author)
             {
                 return author;
             }
@@ -62,8 +65,13 @@ namespace SecretSanta.Api.Controllers
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult<User>> Delete(int id)
         {
+            if(await UserService.DeleteAsync(id) is Boolean result)
+            {
+                return Ok();
+            }
+            return NotFound();
         }
     }
 }
