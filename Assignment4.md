@@ -1,6 +1,6 @@
 # Assignment
 
-- WebAPI Analyzers enabled ✔❌
+- WebAPI Analyzers enabled ✔
 - DI properly configured
   - Services properly registered with correct scopes ✔❌
   - DB context properly registered ✔❌
