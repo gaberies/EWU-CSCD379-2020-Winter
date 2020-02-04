@@ -2,16 +2,16 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecretSanta.Api.Controllers;
 using SecretSanta.Business;
-using SecretSanta.Data;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SecretSanta.Data.Tests;
+using SecretSanta.Data;
 
 namespace SecretSanta.Api.Tests.Controllers
 {
     [TestClass]
-    class UserControllerTests
+    public class UserControllerTests
     {
         [TestMethod]
         public void Create_UserController_Success()
@@ -23,6 +23,7 @@ namespace SecretSanta.Api.Tests.Controllers
             _ = new UserController(service);
 
             //Assert
+            Assert.IsTrue(service != null);
         }
 
         [TestMethod]
@@ -30,7 +31,7 @@ namespace SecretSanta.Api.Tests.Controllers
         public void Create_WithoutService_Fails()
         {
             //Arrange
-
+            
             //Act
             _ = new UserController(null!);
 
@@ -42,37 +43,104 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             // Arrange
             var service = new UserService();
-            User author = SampleData.CreateInigoMontoya();
-            author = await service.InsertAsync(author);
+            User user = SampleData.CreateInigoMontoya();
+            user = await service.InsertAsync(user);
 
             var controller = new UserController(service);
 
             // Act
-            ActionResult<User> rv = await controller.Get(author.Id);
+            ActionResult<User> rv = await controller.Get(user.Id);
 
             // Assert
             Assert.IsTrue(rv.Result is OkObjectResult);
         }
 
+        [TestMethod]
+        public async Task GetById_WithExistingUser_NotFound()
+        {
+            // Arrange
+            var service = new UserService();
+            User user = SampleData.CreateInigoMontoya();
+            user = await service.InsertAsync(user);
+
+            var controller = new UserController(service);
+
+            // Act
+            ActionResult<User> rv = await controller.Get(user.Id + 52);
+
+            // Assert
+            Assert.IsTrue(rv.Result is NotFoundResult);
+        }
+
+        [TestMethod]
+        public async Task FetchAll_WithExistingUsers_Success()
+        {
+            // Arrange
+            var service = new UserService();
+            User user = SampleData.CreateInigoMontoya();
+            User user2 = SampleData.CreatePrincessButtercup();
+            await service.InsertAsync(user);
+            await service.InsertAsync(user2);
+
+            var controller = new UserController(service);
+
+            // Act
+            Task<IEnumerable<User>> returnedValue = await controller.Get();
+
+            // Assert
+            Assert.IsTrue(returnedValue.Result is OkObjectResult);
+        }
+
+        [TestMethod]
+        public async Task FetchAll_WithExistingUsers_NotFound()
+        {
+            // Arrange
+            var service = new UserService();
+            User user = SampleData.CreateInigoMontoya();
+            user = await service.InsertAsync(user);
+
+            var controller = new UserController(service);
+
+            // Act
+            ActionResult<User> rv = await controller.Get(user.Id + 52);
+
+            // Assert
+            Assert.IsTrue(rv.Result is NotFoundResult);
+        }
+
     }
 
-    public class UserService : IUserService
+    internal class UserService : IUserService
     {
-        private Dictionary<int, User> Items { get; } = new Dictionary<int, User>();
+        private Dictionary<int, User> MockItems { get; } = new Dictionary<int, User>();
 
         public Task<bool> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            if (MockItems.TryGetValue(id, out _))
+            {
+                return Task.FromResult(true);
+            }
+            return Task.FromResult(false);
         }
 
         public Task<List<User>> FetchAllAsync()
-        {
-            throw new NotImplementedException();
+        { 
+            if(MockItems.Count != 0)
+            {
+                List<User> userList = new List<User>();
+                foreach(User user in MockItems.Values)
+                {
+                    userList.Add(user);
+                }
+                Task<List<User>> t1 = Task.FromResult(userList);
+                return t1;
+            }
+            return Task.FromResult<List<User>>(null);
         }
 
         public Task<User?> FetchByIdAsync(int id)
         {
-            if (Items.TryGetValue(id, out User? user))
+            if (MockItems.TryGetValue(id, out User? user))
             {
                 Task<User?> t1 = Task.FromResult<User?>(user);
                 return t1;
@@ -83,9 +151,9 @@ namespace SecretSanta.Api.Tests.Controllers
 
         public Task<User> InsertAsync(User entity)
         {
-            int id = Items.Count + 1;
-            Items[id] = new TestUser(entity, id);
-            return Task.FromResult(Items[id]);
+            int id = MockItems.Count + 1;
+            MockItems[id] = new TestUser(entity, id);
+            return Task.FromResult(MockItems[id]);
         }
 
         public Task<User[]> InsertAsync(params User[] entity)
