@@ -85,10 +85,10 @@ namespace SecretSanta.Api.Tests.Controllers
             var controller = new UserController(service);
 
             // Act
-            Task<IEnumerable<User>> returnedValue = (Task<IEnumerable<User>>)await controller.Get();
+            List<User> returnedValue = (List<User>)await controller.Get();
 
             // Assert
-            Assert.IsTrue(returnedValue.Result is OkObjectResult);
+            Assert.AreEqual(2, returnedValue.Count);
         }
 
         [TestMethod]
