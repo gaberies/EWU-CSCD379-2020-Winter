@@ -85,7 +85,7 @@ namespace SecretSanta.Api.Tests.Controllers
             var controller = new UserController(service);
 
             // Act
-            Task<IEnumerable<User>> returnedValue = await controller.Get();
+            Task<IEnumerable<User>> returnedValue = (Task<IEnumerable<User>>)await controller.Get();
 
             // Assert
             Assert.IsTrue(returnedValue.Result is OkObjectResult);
