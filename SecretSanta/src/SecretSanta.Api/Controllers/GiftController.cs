@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,17 +14,22 @@ namespace SecretSanta.Api.Controllers
     {
         private IGiftService GiftService { get; }
 
-        public GiftController(IGiftService userService)
+        public GiftController(IGiftService giftService)
         {
-            GiftService = userService ?? throw new System.ArgumentNullException(nameof(userService));
+            GiftService = giftService ?? throw new System.ArgumentNullException(nameof(giftService));
         }
 
         // GET: https://localhost/api/User
         [HttpGet]
-        public async Task<IEnumerable<Gift>> Get()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<List<Gift>>> Get()
         {
-            List<Gift> users = await GiftService.FetchAllAsync();
-            return users;
+            if (await GiftService.FetchAllAsync() is List<Gift> gifts && gifts != null && gifts.Count != 0)
+            {
+                return Ok(gifts);
+            }
+            return NotFound();
         }
 
         // GET: api/Author/5
@@ -34,7 +38,7 @@ namespace SecretSanta.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Gift>> Get(int id)
         {
-            if (await GiftService.FetchByIdAsync(id) is Gift gift)
+            if (await GiftService.FetchByIdAsync(id) is Gift gift && gift != null)
             {
                 return Ok(gift);
             }
@@ -43,32 +47,53 @@ namespace SecretSanta.Api.Controllers
 
         // POST: api/Author
         [HttpPost]
-        public async Task<Gift> Post(Gift value)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Gift>> Post(Gift? value)
         {
-            return await GiftService.InsertAsync(value);
+            if (value != null)
+            {
+                await GiftService.InsertAsync(value);
+                return Ok(value);
+            }
+            return BadRequest(value);
         }
 
         // PUT: api/Author/5
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<Gift>> Put(int id, Gift value)
         {
-            if (await GiftService.UpdateAsync(id, value) is Gift gift)
+            if (value != null && GiftService.FetchByIdAsync(id) is Task<Gift> giftResult)
             {
-                return gift;
+                if (giftResult.Result == null)
+                {
+                    return BadRequest();
+                }
+                if (await GiftService.UpdateAsync(id, value) is Gift gift && gift != null)
+                {
+                    return Ok(gift);
+                }
+                return StatusCode(500);
             }
-            return NotFound();
+            return BadRequest(value);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Gift>> Delete(int id)
         {
-            if (await GiftService.DeleteAsync(id) is Boolean result)
+            if (GiftService.FetchByIdAsync(id) is Task<Gift> gift && gift != null)
             {
-                return Ok();
+                if (await GiftService.DeleteAsync(id))
+                {
+                    return Ok(gift.Result);
+                }
             }
             return NotFound();
         }

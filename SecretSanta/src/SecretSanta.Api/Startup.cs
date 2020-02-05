@@ -24,9 +24,11 @@ namespace SecretSanta.Api
         //}
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public static void Configure(IServiceCollection services)
+        public static void ConfigureServices(IServiceCollection services)
         {
+#pragma warning disable CA2000 // Dispose objects before losing scope
             var sqliteConnection = new SqliteConnection("DataSource=:memory:");
+#pragma warning restore CA2000 // Dispose objects before losing scope
             sqliteConnection.Open();
 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -42,7 +44,6 @@ namespace SecretSanta.Api
             services.AddAutoMapper(new[] { assembly });
 
             services.AddMvc(opts => opts.EnableEndpointRouting = false);
-
             services.AddSwaggerDocument();
         }
 
@@ -56,11 +57,8 @@ namespace SecretSanta.Api
             }
 
             app.UseRouting();
-
             app.UseOpenApi();
-            //http://localhost/swagger
             app.UseSwaggerUi3();
-
             app.UseMvc();
         }
     }

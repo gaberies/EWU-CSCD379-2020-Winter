@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SecretSanta.Business;
-using SecretSanta.Business.Services;
 using SecretSanta.Data;
 
 namespace SecretSanta.Api.Controllers
@@ -16,17 +14,22 @@ namespace SecretSanta.Api.Controllers
     {
         private IGroupService GroupService { get; }
 
-        public GroupController(IGroupService userService)
+        public GroupController(IGroupService groupService)
         {
-            GroupService = userService ?? throw new System.ArgumentNullException(nameof(userService));
+            GroupService = groupService ?? throw new System.ArgumentNullException(nameof(groupService));
         }
 
         // GET: https://localhost/api/User
         [HttpGet]
-        public async Task<IEnumerable<Group>> Get()
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<List<Group>>> Get()
         {
-            List<Group> users = await GroupService.FetchAllAsync();
-            return users;
+            if (await GroupService.FetchAllAsync() is List<Group> groups && groups != null && groups.Count != 0)
+            {
+                return Ok(groups);
+            }
+            return NotFound();
         }
 
         // GET: api/Author/5
@@ -35,7 +38,7 @@ namespace SecretSanta.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Group>> Get(int id)
         {
-            if (await GroupService.FetchByIdAsync(id) is Group group)
+            if (await GroupService.FetchByIdAsync(id) is Group group && group != null)
             {
                 return Ok(group);
             }
@@ -44,32 +47,53 @@ namespace SecretSanta.Api.Controllers
 
         // POST: api/Author
         [HttpPost]
-        public async Task<Group> Post(Group value)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<Group>> Post(Group? value)
         {
-            return await GroupService.InsertAsync(value);
+            if (value != null)
+            {
+                await GroupService.InsertAsync(value);
+                return Ok(value);
+            }
+            return BadRequest(value);
         }
 
         // PUT: api/Author/5
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesDefaultResponseType]
         public async Task<ActionResult<Group>> Put(int id, Group value)
         {
-            if (await GroupService.UpdateAsync(id, value) is Group group)
+            if (value != null && GroupService.FetchByIdAsync(id) is Task<Group> groupResult)
             {
-                return group;
+                if (groupResult.Result == null)
+                {
+                    return BadRequest();
+                }
+                if (await GroupService.UpdateAsync(id, value) is Group group && group != null)
+                {
+                    return Ok(group);
+                }
+                return StatusCode(500);
             }
-            return NotFound();
+            return BadRequest(value);
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<Group>> Delete(int id)
         {
-            if (await GroupService.DeleteAsync(id) is Boolean result)
+            if (GroupService.FetchByIdAsync(id) is Task<Group> group && group != null)
             {
-                return Ok();
+                if (await GroupService.DeleteAsync(id))
+                {
+                    return Ok(group.Result);
+                }
             }
             return NotFound();
         }

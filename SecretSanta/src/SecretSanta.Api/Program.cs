@@ -10,7 +10,7 @@ namespace SecretSanta.Api
     {
         public static void Main(string[] args)
         {
-            IHost host = CreateHostBuilder(args).Build();
+            IHost host =CreateHostBuilder(args).Build();
 
             using (IServiceScope scope = host.Services.CreateScope())
             {
