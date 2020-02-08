@@ -27,11 +27,19 @@ namespace SecretSanta.Business.Tests
 
         protected override GiftInput CreateInputDto()
         {
+            // We need to figure out why this is not getting mapped over. I thnk it has
+            // to do with the mapper
+            Dto.User user = new Dto.User
+            {
+                FirstName = Guid.NewGuid().ToString(),
+                LastName = Guid.NewGuid().ToString()
+            };
             return new GiftInput
             {
                 Title = Guid.NewGuid().ToString(),
                 Description = Guid.NewGuid().ToString(),
                 Url = Guid.NewGuid().ToString(),
+                User = user,
                 UserId = 1 //From the user we inserted in the initialize
             };
         }
