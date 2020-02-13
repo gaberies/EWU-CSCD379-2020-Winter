@@ -34,6 +34,7 @@ namespace SecretSanta.Api
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddSwaggerDocument();
+            services.AddHttpClient("SecretSantaApi");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,8 +47,9 @@ namespace SecretSanta.Api
 
             app.UseOpenApi();
             app.UseSwaggerUi3();
-
-            app.UseMvc();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseMvcWithDefaultRoute();
         }
     }
 }
