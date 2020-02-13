@@ -1481,8 +1481,8 @@ namespace SecretSanta.Web.Api
         [System.ComponentModel.DataAnnotations.Required]
         public string LastName { get; set; }
 
-        [Newtonsoft.Json.JsonProperty("santaId", Required = Newtonsoft.Json.Required.Always)]
-        public int SantaId { get; set; }
+        [Newtonsoft.Json.JsonProperty("santaId", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public int? SantaId { get; set; }
 
         [Newtonsoft.Json.JsonProperty("santa", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public User Santa { get; set; }

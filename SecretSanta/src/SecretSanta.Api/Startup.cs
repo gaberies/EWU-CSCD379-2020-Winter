@@ -28,9 +28,7 @@ namespace SecretSanta.Api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IGroupService, GroupService>();
 
-            System.Type profileType = typeof(AutomapperConfigurationProfile);
-            System.Reflection.Assembly assembly = profileType.Assembly;
-            services.AddAutoMapper(new[] { assembly });
+            services.AddAutoMapper(new[] { typeof(AutomapperConfigurationProfile).Assembly });
 
             services.AddMvc(options => options.EnableEndpointRouting = false);
             services.AddSwaggerDocument();

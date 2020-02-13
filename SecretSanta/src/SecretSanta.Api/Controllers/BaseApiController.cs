@@ -36,13 +36,13 @@ namespace SecretSanta.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<TDto?> Put(int id, [FromBody] TDto value)
+        public async Task<TDto?> Put(int id, [FromBody] TInputDto value)
         {
             return await Service.UpdateAsync(id, value);
         }
 
         [HttpPost]
-        public async Task<TDto> Post(TDto entity)
+        public async Task<TDto> Post(TInputDto entity)
         {
             return await Service.InsertAsync(entity);
         }
