@@ -146,7 +146,7 @@ namespace SecretSanta.Api.Tests.Controllers
         }
 
         [TestMethod]
-        public async Task Delete_RemoveGift_Success()
+        public async Task Delete_RemoveGift_Success()   
         {
             // Arrange
             using ApplicationDbContext context = Factory.GetDbContext();
