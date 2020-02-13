@@ -34,10 +34,10 @@ namespace SecretSanta.Api.Controllers
         public async Task<ActionResult> IndexAsync()
         {
             HttpClient httpClient = ClientFactory.CreateClient("SantaApi");
-            GiftClient client = new GiftClient(httpClient);
+            //GiftClient client = new GiftClient(httpClient);
 
-            ICollection<Gift> users = await client.GetAllAsync();
-            return View(users);
+            //ICollection<Gift> users = await client.GetAllAsync();
+            return null!;  //View(users);
         }
     }
 }

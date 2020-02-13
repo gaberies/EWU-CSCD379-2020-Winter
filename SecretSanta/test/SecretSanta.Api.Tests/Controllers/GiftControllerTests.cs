@@ -1,23 +1,29 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecretSanta.Api.Controllers;
 using SecretSanta.Business;
+using SecretSanta.Business.Dto;
 using SecretSanta.Business.Services;
 using SecretSanta.Data;
 using SecretSanta.Data.Tests;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SecretSanta.Api.Tests.Controllers
 {
     [TestClass]
-    public class GiftControllTests : BaseApiControllerTests<Business.Dto.Gift, Business.Dto.GiftInput, GiftInMemoryService>
+    public class GiftControllerTests : BaseApiControllerTests<Business.Dto.Gift, Business.Dto.GiftInput, GiftInMemoryService>
     {
         protected override BaseApiController<Business.Dto.Gift, Business.Dto.GiftInput> CreateController(GiftInMemoryService service)
-            => new GiftController(service);
-
+        {
+            return new GiftController(service);
+        }
         protected override Business.Dto.Gift CreateEntity()
         {
             Business.Dto.User user = new Business.Dto.User
@@ -38,6 +44,7 @@ namespace SecretSanta.Api.Tests.Controllers
         public async Task Get_ReturnsGifts_Success()
         {
             // Arrange
+
             using ApplicationDbContext context = Factory.GetDbContext();
             Data.Gift gift = SampleData.CreateLoveGift();
             context.Gifts.Add(gift);
@@ -67,7 +74,7 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             // Arrange
             Data.Gift entity = SampleData.CreateLoveGift();
-
+            
             GiftInput giftInput = Mapper.Map<Data.Gift, Business.Dto.Gift>(entity);
             System.Type inputType = typeof(GiftInput);
             System.Reflection.PropertyInfo? propInfo = inputType.GetProperty(propertyName);
@@ -88,11 +95,11 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             // Arrange
             using ApplicationDbContext context = Factory.GetDbContext();
-            Data.Gift gift = SampleData.CreateSampleGift();
+            Data.Gift gift = SampleData.CreateLoveGift();
             context.Gifts.Add(gift);
             context.SaveChanges();
 
-            Business.Dto.GiftInput giftInput = Mapper.Map<Data.Gift, Business.Dto.GiftInput>(gift);
+            Business.Dto.GiftInput giftInput = Mapper.Map<Data.Gift, GiftInput>(gift);
             giftInput.Title = "updated title";
             giftInput.Description = "updated desc";
             giftInput.Url = "updated url";
@@ -119,7 +126,7 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             // Arrange
             using ApplicationDbContext context = Factory.GetDbContext();
-            Data.Gift gift = SampleData.CreateSampleGift();
+            Data.Gift gift = SampleData.CreateLoveGift();
             context.Gifts.Add(gift);
             context.SaveChanges();
 
@@ -143,8 +150,8 @@ namespace SecretSanta.Api.Tests.Controllers
         {
             // Arrange
             using ApplicationDbContext context = Factory.GetDbContext();
-            Data.Gift gift1 = SampleData.CreateSampleGift();
-            Data.Gift gift2 = SampleData.CreateSampleGift();
+            Data.Gift gift1 = SampleData.CreateLoveGift();
+            Data.Gift gift2 = SampleData.CreateLoveGift();
             context.Gifts.Add(gift1);
             context.Gifts.Add(gift2);
             context.SaveChanges();

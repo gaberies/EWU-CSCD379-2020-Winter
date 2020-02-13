@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SecretSanta.Api.Controllers;
+using SecretSanta.Business;
 using SecretSanta.Business.Dto;
 using SecretSanta.Business.Services;
+using SecretSanta.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace SecretSanta.Api.Tests.Controllers
@@ -18,7 +22,37 @@ namespace SecretSanta.Api.Tests.Controllers
     {
         protected abstract BaseApiController<TDto, TInputDto> CreateController(TService service);
 
+#nullable disable // Set in TestInitialize
+        protected SecretSantaWebApplicationFactory Factory { get; set; }
+        protected HttpClient Client { get; set; }
+#nullable enable
+        protected IMapper Mapper { get; } = AutomapperConfigurationProfile.CreateMapper();
+
         protected abstract TDto CreateEntity();
+
+        [TestInitialize]
+        public void TestInitalize()
+        {
+            Factory = new SecretSantaWebApplicationFactory();
+            using ApplicationDbContext context = Factory.GetDbContext();
+            context.Database.EnsureCreated();
+
+            Client = Factory.CreateClient();
+
+            SeedData();
+        }
+
+        private void SeedData()
+        {
+            using ApplicationDbContext context = Factory.GetDbContext();
+
+            for (int i = 0; i < 10; i++)
+            {
+                TDto entity = CreateEntity();
+                context.Add(entity);
+                context.SaveChanges();
+            }
+        }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
