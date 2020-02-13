@@ -12,7 +12,6 @@ namespace SecretSanta.Business.Dto
         [Required]
         public string? LastName { get; set; }
 
-        [Required]
         public int? SantaId { get; set; }
 
         public User? Santa { get; set; }

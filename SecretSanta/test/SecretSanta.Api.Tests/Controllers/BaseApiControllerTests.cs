@@ -38,20 +38,6 @@ namespace SecretSanta.Api.Tests.Controllers
             context.Database.EnsureCreated();
 
             Client = Factory.CreateClient();
-
-            SeedData();
-        }
-
-        private void SeedData()
-        {
-            using ApplicationDbContext context = Factory.GetDbContext();
-
-            for (int i = 0; i < 10; i++)
-            {
-                TDto entity = CreateEntity();
-                context.Add(entity);
-                context.SaveChanges();
-            }
         }
 
         [TestMethod]

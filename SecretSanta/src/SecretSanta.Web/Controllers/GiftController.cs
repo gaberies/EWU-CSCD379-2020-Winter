@@ -26,8 +26,8 @@ namespace SecretSanta.Web.Controllers
             HttpClient httpClient = ClientFactory.CreateClient("SecretSantaApi");
 
             var client = new GiftClient(httpClient);
-            ICollection<Gift> authors = await client.GetAllAsync();
-            return View(authors);
+            ICollection<Gift> gifts = await client.GetAllAsync();
+            return View(gifts);
         }
     }
 }

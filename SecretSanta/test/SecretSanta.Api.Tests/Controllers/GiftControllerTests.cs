@@ -61,10 +61,10 @@ namespace SecretSanta.Api.Tests.Controllers
             JsonSerializerOptions options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, };
             Business.Dto.Gift[] gifts = JsonSerializer.Deserialize<Business.Dto.Gift[]>(json, options);
 
-            Assert.AreEqual(gift.Id, gifts[10].Id);
-            Assert.AreEqual(gift.Title, gifts[10].Title);
-            Assert.AreEqual(gift.Description, gifts[10].Description);
-            Assert.AreEqual(gift.Url, gifts[10].Url);
+            Assert.AreEqual(gift.Id, gifts[0].Id);
+            Assert.AreEqual(gift.Title, gifts[0].Title);
+            Assert.AreEqual(gift.Description, gifts[0].Description);
+            Assert.AreEqual(gift.Url, gifts[0].Url);
         }
 
         [TestMethod]
@@ -163,7 +163,7 @@ namespace SecretSanta.Api.Tests.Controllers
             response.EnsureSuccessStatusCode();
             List<Data.Gift> gifts = await context.Gifts.ToListAsync();
 
-            Assert.AreEqual(11, gifts.Count);
+            Assert.AreEqual(1, gifts.Count);
         }
 
         [TestMethod]
