@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SecretSanta.Web.Api.Gift>
+﻿@model IEnumerable<Gift>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -22,9 +22,8 @@
                 <td asp-display-for="@item.Description"></td>
                 <td asp-display-for="@item.Url"></td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                 </td>
             </tr>
         }
