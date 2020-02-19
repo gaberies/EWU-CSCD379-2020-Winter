@@ -37,9 +37,6 @@ namespace SecretSanta.Api
 
             services.AddControllers();
             services.AddSwaggerDocument();
-
-
-
         }
 
 

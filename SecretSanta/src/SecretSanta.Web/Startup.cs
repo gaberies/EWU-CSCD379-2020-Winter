@@ -37,8 +37,6 @@ namespace SecretSanta.Web
 
             app.UseHttpsRedirection();
             app.UseRouting();
-
-            // Do we want to use static files here?
             app.UseStaticFiles();
 
             app.UseEndpoints(endpoint =>
