@@ -20,7 +20,7 @@ module.exports = (env, argv) => {
 
     return {
         entry: {
-            main: './scripts/Main.ts'
+            main: './scripts/main.ts'
         },
         output: {
             filename: 'js/[name].[hash].js',
