@@ -3,38 +3,44 @@ import { Gift, IGift } from "./secretsanta-client";
 
 const app = new App();
 
-app.deleteAllGifts();
-app.addAllGifts(giftsArray());
-generateGifts(app);
+export function renderGifts() {
+    app.deleteAllGifts();
+    app.addAllGifts(giftsArray());
+    generateGifts(app);
+}
+
 
 function generateGifts(app: App) {
     app.getAllGifts().then((giftsArray: Gift[]) => {
         giftsArray.forEach((gift) => {
-            document.getElementById("giftsPage").append(convert(gift));
+            let item: HTMLLIElement = document.createElement("li");
+            item.textContent = convert(gift);
+            document.getElementById("giftsPage").append(item);
         });
     });
 }
 
 function convert(gift: Gift): string {
-    return `<li>Title:${gift.title} Description:${gift.description} Url:${gift.url}</li>`;
+    return `Title: ${gift.title}    Description: ${gift.description}    Url: ${gift.url}`;
 }
 
 function giftsArray(): Gift[] {
-    let giftsArray: Gift[] = new Gift[7];
-    giftsArray[0] = new Gift(createGift("Title", "Description", "Url"));
-    giftsArray[1] = new Gift(createGift("box", "boring", "www.amazon.com"));
-    giftsArray[2] = new Gift(createGift("bike", "fun and quick", "www.bikestore.com"));
-    giftsArray[3] = new Gift(createGift("socks", "warm", "www.sockstore.com"));
-    giftsArray[4] = new Gift(createGift("shoe", "flashy", "www.shoes.com"));
-    giftsArray[5] = new Gift(createGift("TV", "expensive", "www.bestbuy.com"));
-    giftsArray[6] = new Gift(createGift("computer", "more expensive", "www.amazon.com"));
+    var giftsArray: Gift[] = [];
+    giftsArray[0] = new Gift(createGift(1, "Title", "Description", "Url"));
+    giftsArray[1] = new Gift(createGift(2, "box", "boring", "www.amazon.com"));
+    giftsArray[2] = new Gift(createGift(3, "bike", "fun and quick", "www.bikestore.com"));
+    giftsArray[3] = new Gift(createGift(4, "socks", "warm", "www.sockstore.com"));
+    giftsArray[4] = new Gift(createGift(5, "shoe", "flashy", "www.shoes.com"));
+    giftsArray[5] = new Gift(createGift(6, "TV", "expensive", "www.bestbuy.com"));
+    giftsArray[6] = new Gift(createGift(7, "computer", "more expensive", "www.amazon.com"));
     return giftsArray;
 }
 
-function createGift(title: string, description: string, url: string): IGift {
+function createGift(id: number, title: string, description: string, url: string): IGift {
     let toReturn: IGift = new Gift();
     toReturn.title = title;
     toReturn.description = description;
     toReturn.url = url;
+    toReturn.userId = 1;
     return toReturn;
 }
