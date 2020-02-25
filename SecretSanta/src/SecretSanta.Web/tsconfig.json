@@ -1,10 +1,7 @@
 ﻿{
   "compilerOptions": {
     "module": "CommonJS",
-    "noImplicitAny": true,
-    "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true
+    "noImplicitAny": true
   },
   "include": [
     "./scripts/**/*"
