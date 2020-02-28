@@ -3,18 +3,18 @@
         <div class="field">
             <label class="label">First Name</label>
             <div class="control">
-                <input class="input" type="text" v-model="clonedAuthor.firstName" />
+                <input class="input" type="text" v-model="clonedUser.firstName" />
             </div>
         </div>
         <div class="field">
             <label class="label">Last Name</label>
             <div class="control">
-                <input class="input" type="text" v-model="clonedAuthor.lastName" />
+                <input class="input" type="text" v-model="clonedUser.lastName" />
             </div>
         </div>
         <div class="field is-grouped">
             <div class="control">
-                <button id="submit" class="button is-primary" @click.once="saveAuthor">Submit</button>
+                <button id="submit" class="button is-primary" @click.once="saveUser">Submit</button>
             </div>
             <div class="control">
                 <a class="button is-light" @click="cancelEdit">Cancel</a>
