@@ -1,6 +1,6 @@
 ﻿<template>
     <div>
-        <button class="button" @click="createAuthor()">Create New</button>
+        <button class="button" @click="createUser()">Create New</button>
         <table class="table">
             <thead>
                 <tr>
@@ -18,15 +18,15 @@
                     <td>{{user.lastName}}</td>
                     <td>{{user.email}}</td>
                     <td>
-                        <button class="button" @click='setAuthor(author)'>Edit</button>
-                        <button class="button" @click='deleteAuthor(author)'>Delete</button>
+                        <button class="button" @click='setUser(user)'>Edit</button>
+                        <button class="button" @click='deleteUser(user)'>Delete</button>
                     </td>
                 </tr>
             </tbody>
         </table>
-        <author-details-component v-if="selectedAuthor != null"
-                                  :author="selectedAuthor"
-                                  @author-saved="refreshAuthors()"></author-details-component>
+        <author-details-component v-if="selectedUser != null"
+                                  :author="selectedUser"
+                                  @author-saved="refreshUsers()"></author-details-component>
     </div>
 </template>
 <script lang="ts">
