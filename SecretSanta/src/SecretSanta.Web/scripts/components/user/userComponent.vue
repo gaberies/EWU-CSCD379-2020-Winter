@@ -24,9 +24,9 @@
                 </tr>
             </tbody>
         </table>
-        <author-details-component v-if="selectedUser != null"
-                                  :author="selectedUser"
-                                  @author-saved="refreshUsers()"></author-details-component>
+        <user-details-component v-if="selectedUser != null"
+                                  :user="selectedUser"
+                                  @user-saved="refreshUsers()"></user-details-component>
     </div>
 </template>
 <script lang="ts">
