@@ -68,7 +68,7 @@
         async deleteUser(user: User) {
             if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}`)) {
                 await this.app.deleteUser(user);
-                document.getElementById(`#${user.id}`).remove();
+                this.$forceUpdate();
             }
             await this.refreshUsers();
         }
