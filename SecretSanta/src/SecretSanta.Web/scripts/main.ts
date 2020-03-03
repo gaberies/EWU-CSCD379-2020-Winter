@@ -1,8 +1,8 @@
 ﻿import '../styles/site.scss';
 import Vue from 'vue';
 import UserComponent from './components/user/userComponent.vue';
-//import GiftComponent from './components/user/giftComponent.vue';
-//import GroupComponent from './components/user/groupComponent.vue';
+import GiftComponent from './components/gift/giftComponent.vue';
+import GroupComponent from './components/group/groupComponent.vue';
 
 document.addEventListener("DOMContentLoaded", async () => {
     if (document.getElementById('userList')) {
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }).$mount('#userList');
     }
 
-/*    if (document.getElementById('giftList')) {
+    if (document.getElementById('giftList')) {
         new Vue({
             render: h => h(GiftComponent)
         }).$mount('#giftList');
@@ -21,5 +21,5 @@ document.addEventListener("DOMContentLoaded", async () => {
         new Vue({
             render: h => h(GroupComponent)
         }).$mount('#groupList');
-    }*/
+    }
 });

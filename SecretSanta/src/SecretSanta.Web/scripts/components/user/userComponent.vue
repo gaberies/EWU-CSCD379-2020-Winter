@@ -23,8 +23,8 @@
             </tbody>
         </table>
         <user-details-component v-if="selectedUser != null"
-                                  :user="selectedUser"
-                                  @user-saved="refreshUsers()"></user-details-component>
+                                :user="selectedUser"
+                                @user-saved="refreshUsers()"></user-details-component>
     </div>
 </template>
 <script lang="ts">
@@ -56,19 +56,19 @@
             await this.loadUsers();
         }
 
-        setUser(user: User) {   
+        setUser(user: User) {
             this.selectedUser = user;
         }
 
         async refreshUsers() {
             this.selectedUser = null;
             await this.loadUsers();
+            this.$forceUpdate();
         }
 
         async deleteUser(user: User) {
             if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}`)) {
                 await this.app.deleteUser(user);
-                this.$forceUpdate();
             }
             await this.refreshUsers();
         }
