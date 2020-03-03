@@ -64,7 +64,7 @@ export module App {
         }
 
         async deleteUser(user: User): Promise<void> {
-            this.giftClient.delete(user.id);
+            this.userClient.delete(user.id);
         }
 
         async deleteAllUsers(): Promise<void> {

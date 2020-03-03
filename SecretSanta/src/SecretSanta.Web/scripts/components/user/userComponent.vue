@@ -60,10 +60,6 @@
             this.selectedUser = user;
         }
 
-        deteleUser(user: User) {
-            this.app.deleteUser(user);
-        }
-
         async refreshUsers() {
             this.selectedUser = null;
             await this.loadUsers();
