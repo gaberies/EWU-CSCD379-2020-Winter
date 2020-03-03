@@ -56,7 +56,7 @@
             await this.loadUsers();
         }
 
-        setUser(user: User) {
+        setUser(user: User) {   
             this.selectedUser = user;
         }
 
@@ -68,6 +68,7 @@
         async deleteUser(user: User) {
             if (confirm(`Are you sure you want to delete ${user.firstName} ${user.lastName}`)) {
                 await this.app.deleteUser(user);
+                document.getElementById(`#${user.id}`).remove();
             }
             await this.refreshUsers();
         }
