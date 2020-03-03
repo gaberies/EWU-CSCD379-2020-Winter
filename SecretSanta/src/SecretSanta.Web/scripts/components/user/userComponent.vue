@@ -7,7 +7,6 @@
                     <th>Id</th>
                     <th>First Name</th>
                     <th>Last Name</th>
-                    <th>Email Address</th>
                     <th></th>
                 </tr>
             </thead>
@@ -16,7 +15,6 @@
                     <td>{{user.id}}</td>
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
-                    <td>{{user.email}}</td>
                     <td>
                         <button class="button" @click='setUser(user)'>Edit</button>
                         <button class="button" @click='deleteUser(user)'>Delete</button>
@@ -60,6 +58,10 @@
 
         setUser(user: User) {
             this.selectedUser = user;
+        }
+
+        deteleUser(user: User) {
+            this.app.deleteUser(user);
         }
 
         async refreshUsers() {
