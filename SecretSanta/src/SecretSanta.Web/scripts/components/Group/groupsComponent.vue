@@ -1,7 +1,7 @@
 ﻿<template>
     <div>
         <h2>Groups</h2>
-        <button class="button is-secondary" @click="create()">Create New</button>
+        <button id="create-new-group-button" class="button is-secondary" @click="create()">Create New</button>
         <table class="table">
             <thead>
                 <tr>
@@ -11,12 +11,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="group in groups" :key="group.id">
+                <tr id="`${group.id}`" v-for="group in groups" :key="group.id">
                     <td>{{group.id}}</td>
                     <td>{{group.title}}</td>
                     <td>
-                        <button class="button is-primary" @click="edit(group)">Edit</button>
-                        <button class="button" @click="deleteGroup(group)">Delete</button>
+                        <button id="`${group.id}-edit-group-button`" class="button is-primary" @click="edit(group)">Edit</button>
+                        <button id="`${group.id}-delete-group-button`" class="button" @click="deleteGroup(group)">Delete</button>
                     </td>
                 </tr>
             </tbody>

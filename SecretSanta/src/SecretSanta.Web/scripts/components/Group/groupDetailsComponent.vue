@@ -5,15 +5,15 @@
             <div class="field">
                 <label class="label has-text-white">Title</label>
                 <div class="control">
-                    <input class="input" type="text" v-model="clonedGroup.title" />
+                    <input id="group-title-input" class="input" type="text" v-model="clonedGroup.title" />
                 </div>
             </div>
             <div class="field is-grouped">
                 <div class="control">
-                    <button id="submit" class="button is-primary" @click.once="save">Submit</button>
+                    <button id="group-submit-button" class="button is-primary" @click.once="save">Submit</button>
                 </div>
                 <div class="control">
-                    <a class="button" @click="cancel">Cancel</a>
+                    <a id="group-cancel-button" class="button" @click="cancel">Cancel</a>
                 </div>
             </div>
         </div>

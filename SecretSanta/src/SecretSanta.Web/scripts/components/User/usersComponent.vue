@@ -1,7 +1,7 @@
 ﻿<template>
     <div>
         <h2>Users</h2>
-        <button class="button is-secondary" @click="create()">Create New</button>
+        <button id="create-new-user-button" class="button is-secondary" @click="create()">Create New</button>
         <table class="table">
             <thead>
                 <tr>
@@ -12,13 +12,13 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="user in users" :key="user.id">
+                <tr id="`${user.id}`" v-for="user in users" :key="user.id">
                     <td>{{user.id}}</td>
                     <td>{{user.firstName}}</td>
                     <td>{{user.lastName}}</td>
                     <td>
-                        <button class="button is-primary" @click="edit(user)">Edit</button>
-                        <button class="button" @click="deleteUser(user)">Delete</button>
+                        <button id="`${user.id}-edit-user-button`" class="button is-primary" @click="edit(user)">Edit</button>
+                        <button id="`${user.id}-delete-user-button`" class="button" @click="deleteUser(user)">Delete</button>
                     </td>
                 </tr>
             </tbody>

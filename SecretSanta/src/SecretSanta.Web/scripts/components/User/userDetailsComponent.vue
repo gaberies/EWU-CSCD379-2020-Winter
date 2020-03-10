@@ -5,21 +5,21 @@
             <div class="field">
                 <label class="label has-text-white">First Name</label>
                 <div class="control">
-                    <input class="input" type="text" v-model="clonedUser.firstName" />
+                    <input id="user-title-firstName" class="input" type="text" v-model="clonedUser.firstName" />
                 </div>
             </div>
             <div class="field">
                 <label class="label has-text-white">Last Name</label>
                 <div class="control">
-                    <input class="input" type="text" v-model="clonedUser.lastName" />
+                    <input id="user-title-lastName" class="input" type="text" v-model="clonedUser.lastName" />
                 </div>
             </div>
             <div class="field is-grouped">
                 <div class="control">
-                    <button id="submit" class="button is-primary" @click.once="save">Submit</button>
+                    <button id="user-submit-button" class="button is-primary" @click.once="save">Submit</button>
                 </div>
                 <div class="control">
-                    <a class="button" @click="cancel">Cancel</a>
+                    <a id="user-cancel-button" class="button" @click="cancel">Cancel</a>
                 </div>
             </div>
         </div>

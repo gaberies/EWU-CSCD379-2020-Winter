@@ -5,26 +5,26 @@
             <div class="field">
                 <label class="label has-text-white">Title</label>
                 <div class="control">
-                    <input class="input" type="text" v-model="clonedGift.title" />
+                    <input id="gift-title-input" class="input" type="text" v-model="clonedGift.title" />
                 </div>
             </div>
             <div class="field">
                 <label class="label has-text-white">Description</label>
                 <div class="control">
-                    <input class="input" type="text" v-model="clonedGift.description" />
+                    <input id="gift-description-input" class="input" type="text" v-model="clonedGift.description" />
                 </div>
             </div>
             <div class="field">
                 <label class="label has-text-white">Url</label>
                 <div class="control">
-                    <input class="input" type="text" v-model="clonedGift.url" />
+                    <input id="gift-url-input" class="input" type="text" v-model="clonedGift.url" />
                 </div>
             </div>
             <div class="field">
                 <label class="label has-text-white">User</label>
                 <div class="select">
-                    <select v-model="clonedGift.userId">
-                        <option v-for="user in users" :value="user.id">
+                    <select id="gift-select" v-model="clonedGift.userId">
+                        <option id="user-user.id" v-for="user in users" :value="user.id">
                             {{user.firstName}} {{user.lastName}}
                         </option>
                     </select>
@@ -33,10 +33,10 @@
             </div>
             <div class="field is-grouped">
                 <div class="control">
-                    <button id="submit" class="button is-primary" @click.once="save">Submit</button>
+                    <button id="gift-submit-button" class="button is-primary" @click.once="save">Submit</button>
                 </div>
                 <div class="control">
-                    <a class="button" @click="cancel">Cancel</a>
+                    <a id="gift-cancel-button" class="button" @click="cancel">Cancel</a>
                 </div>
             </div>
         </div>

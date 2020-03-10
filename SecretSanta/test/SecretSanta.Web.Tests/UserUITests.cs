@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using SecretSanta.Web.Api;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,6 +9,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -27,90 +30,60 @@ namespace BlogEngine.Web.Tests
 
         private static Process? WebHostProcess { get; set; }
 
-        string AppURL { get; } = "http://www.bing.com/";
+        public static string AppUrl { get; } = "http://localhost:5002";
+
+        private static int _MockUserId;
 
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            using WebClient webClient = new WebClient();
-            ApiHostProcess = StartWebHost("SecretSanta.Api", 5001, "Swagger", new string[] { "ConnectionStrings:DefaultConnection='Data Source=SecretSanta.db'" });
+            ApiHostProcess = Process.Start("dotnet.exe", "run -p ..\\..\\..\\..\\..\\src\\SecretSanta.Api\\SecretSanta.Api.csproj");
+            WebHostProcess = Process.Start("dotnet.exe", "run -p ..\\..\\..\\..\\..\\src\\SecretSanta.Web\\SecretSanta.Web.csproj");
+            ApiHostProcess.WaitForExit(8000);
 
-            WebHostProcess = StartWebHost("SecretSanta.Web", 5002, "", " ApiUrl=https://localhost:5001");
+            GenerateUser();
+        }
 
-            Process StartWebHost(string projectName, int port, string urlSubDirectory, params string[] args)
+        public static async Task GenerateUser()
+        {
+            using HttpClient httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(AppUrl);
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            UserClient userClient = new UserClient(httpClient);
+            var users = await userClient.GetAllAsync();
+            if (users.Count == 0)
             {
-                string fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, projectName + ".exe");
-                Process[] alreadyExecutingProcesses = Process.GetProcessesByName(projectName);
-                if (alreadyExecutingProcesses.Length != 0)
+                UserInput userInput = new UserInput
                 {
-                    foreach (Process item in alreadyExecutingProcesses)
-                    {
-                        item.Kill();
-                    }
-                }
-
-                string testAssemblyLocation = Assembly.GetExecutingAssembly().Location;
-                string testAssemblyName = Path.GetFileNameWithoutExtension(testAssemblyLocation);
-                string projectExe = testAssemblyLocation.RegexReplace(testAssemblyName, projectName)
-                    .RegexReplace(@"\\test\\", @"\src\").RegexReplace("dll$", "exe");
-
-                string argumentList = $"{string.Join(" ", args)} Urls=https://localhost:{port}";
-
-                ProcessStartInfo startInfo = new ProcessStartInfo(projectExe, argumentList)
-                {
-                    RedirectStandardError = true,
-                    RedirectStandardOutput = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
+                    FirstName = "Test",
+                    LastName = "User"
                 };
 
-                string stdErr = "";
-                string stdOut = "";
-                // Justification: Dispose invoked by caller on Process object returned.
-#pragma warning disable CA2000 // Dispose objects before losing scope
-                Process host = new Process
-                {
-                    EnableRaisingEvents = true,
-                    StartInfo = startInfo
-                };
-#pragma warning restore CA2000 // Dispose objects before losing scope
-
-                host.ErrorDataReceived += (sender, args) =>
-                    stdErr += $"{args.Data}\n";
-                host.OutputDataReceived += (sender, args) =>
-                    stdOut += $"{args.Data}\n";
-                host.Start();
-                host.BeginErrorReadLine();
-                host.BeginOutputReadLine();
-
-                for (int seconds = 20; seconds > 0; seconds--)
-                {
-                    if (stdOut.Contains("Application started."))
-                    {
-                        _ = webClient.DownloadString(
-                            $"https://localhost:{port}/{urlSubDirectory.TrimStart(new char[] { '/', '\\' })}");
-                        return host;
-                    }
-                    else if (host.WaitForExit(1000))
-                    {
-                        break;
-                    }
-                }
-
-                if (!host.HasExited) host.Kill();
-                host.WaitForExit();
-                throw new InvalidOperationException($"Unable to execute process successfully: {stdErr}") { Data = { { "StandardOut", stdOut } } };
-
+                User user = await userClient.PostAsync(userInput);
+                _MockUserId = user.Id;
             }
+            httpClient.Dispose();
         }
 
         [ClassCleanup]
         public static void ClassCleanup()
         {
-            ApiHostProcess?.CloseMainWindow();
-            ApiHostProcess?.Close();
-            WebHostProcess?.CloseMainWindow();
-            WebHostProcess?.Close();
+            if (!(ApiHostProcess is null))
+            {
+                ApiHostProcess.Kill();
+                ApiHostProcess.CloseMainWindow();
+                ApiHostProcess.Close();
+            }
+
+            if (!(WebHostProcess is null))
+            {
+                WebHostProcess.Kill();
+                WebHostProcess.CloseMainWindow();
+                WebHostProcess.Close();
+            }
         }
 
         [TestInitialize]
@@ -133,9 +106,31 @@ namespace BlogEngine.Web.Tests
         [TestMethod]
         public void VerifySiteIsUp()
         {
-            Driver.Navigate().GoToUrl(new Uri("https://localhost:5001/"));
+            Driver.Navigate().GoToUrl(new Uri(AppUrl));
             string text = Driver.FindElement(By.XPath("/html/body/section/div/p")).Text;
-            Assert.IsTrue(text.Contains("Welcome to my blog"));
+            Assert.IsTrue(text.Contains("Welcome to your secret santa app"));
+        }
+
+        [TestMethod]
+        public void DoAssignment()
+        {
+            Driver.Navigate().GoToUrl(new Uri(AppUrl));
+            Driver.FindElement(By.Id("gifts-link")).Click();
+            Driver.FindElement(By.Id("create-new-gift-button")).Click();
+            Driver.FindElement(By.Id("gift-title-input")).SendKeys("Mock Title");
+            Driver.FindElement(By.Id("gift-description-input")).SendKeys("Mock Description");
+            Driver.FindElement(By.Id("gift-url-input")).SendKeys("Mock Url");
+            Driver.FindElement(By.Id("gift-select")).Click();
+            Driver.FindElement(By.Id($"{_MockUserId}")).Click();
+            Driver.FindElement(By.Id("gift-submit-button")).Click();
+
+            Screenshot screenShot = ((ITakesScreenshot)Driver).GetScreenshot();
+
+            screenShot.SaveAsFile("./testScreenShot.png");
+
+/*            IWebElement sut = Driver.FindElement(By.Link);
+
+            Assert.IsTrue(text.Contains("Welcome to your secret santa app"));*/
         }
 
         [TestCleanup()]
