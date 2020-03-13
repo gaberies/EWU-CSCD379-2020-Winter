@@ -13,7 +13,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr :id="gift-gift.id" v-for="gift in gifts" :key="gift.id">
+                <tr :id="gift.id" v-for="gift in gifts" :key="gift.id">
                     <td>{{gift.id}}</td>
                     <td>{{gift.title}}</td>
                     <td>{{gift.description}}</td>

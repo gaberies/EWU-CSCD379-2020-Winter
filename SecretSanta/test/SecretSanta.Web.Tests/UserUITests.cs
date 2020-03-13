@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace BlogEngine.Web.Tests
+namespace SecretSanta.Web.Tests
 {
     [TestClass]
     public class AuthorTests
@@ -35,13 +35,13 @@ namespace BlogEngine.Web.Tests
         private static int _MockUserId;
 
         [ClassInitialize]
-        public static void ClassInitialize(TestContext testContext)
+        public static async Task ClassInitialize(TestContext testContext)
         {
             ApiHostProcess = Process.Start("dotnet.exe", "run -p ..\\..\\..\\..\\..\\src\\SecretSanta.Api\\SecretSanta.Api.csproj");
             WebHostProcess = Process.Start("dotnet.exe", "run -p ..\\..\\..\\..\\..\\src\\SecretSanta.Web\\SecretSanta.Web.csproj");
             ApiHostProcess.WaitForExit(8000);
 
-            GenerateUser();
+            await GenerateUser();
         }
 
         public static async Task GenerateUser()
@@ -53,24 +53,21 @@ namespace BlogEngine.Web.Tests
                 new MediaTypeWithQualityHeaderValue("application/json"));
 
             UserClient userClient = new UserClient(httpClient);
-            var users = await userClient.GetAllAsync();
-            if (users.Count == 0)
+            UserInput userInput = new UserInput
             {
-                UserInput userInput = new UserInput
-                {
-                    FirstName = "Test",
-                    LastName = "User"
-                };
+                FirstName = "Test",
+                LastName = "User"
+            };
 
-                User user = await userClient.PostAsync(userInput);
-                _MockUserId = user.Id;
-            }
+            User user = await userClient.PostAsync(userInput);
+            _MockUserId = user.Id;
             httpClient.Dispose();
         }
 
         [ClassCleanup]
-        public static void ClassCleanup()
+        public static async Task ClassCleanup()
         {
+            await DeleteUser();
             if (!(ApiHostProcess is null))
             {
                 ApiHostProcess.Kill();
@@ -84,6 +81,18 @@ namespace BlogEngine.Web.Tests
                 WebHostProcess.CloseMainWindow();
                 WebHostProcess.Close();
             }
+        }
+
+        private static async Task DeleteUser()
+        {
+            using HttpClient httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(AppUrl);
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            UserClient userClient = new UserClient(httpClient);
+            await userClient.DeleteAsync(_MockUserId);
         }
 
         [TestInitialize]
@@ -117,8 +126,11 @@ namespace BlogEngine.Web.Tests
             Driver.Navigate().GoToUrl(new Uri(AppUrl));
             Driver.FindElement(By.Id("gifts-link")).Click();
             Driver.FindElement(By.Id("create-new-gift-button")).Click();
+            Driver.FindElement(By.Id("gift-title-input")).Click();
             Driver.FindElement(By.Id("gift-title-input")).SendKeys("Mock Title");
+            Driver.FindElement(By.Id("gift-description-input")).Click();
             Driver.FindElement(By.Id("gift-description-input")).SendKeys("Mock Description");
+            Driver.FindElement(By.Id("gift-url-input")).Click();
             Driver.FindElement(By.Id("gift-url-input")).SendKeys("Mock Url");
             Driver.FindElement(By.Id("gift-select")).Click();
             Driver.FindElement(By.Id($"{_MockUserId}")).Click();
@@ -128,9 +140,9 @@ namespace BlogEngine.Web.Tests
 
             screenShot.SaveAsFile("./testScreenShot.png");
 
-/*            IWebElement sut = Driver.FindElement(By.Link);
-
-            Assert.IsTrue(text.Contains("Welcome to your secret santa app"));*/
+            Assert.IsTrue(Driver.FindElement(By.LinkText("Mock Title")).Displayed);
+            Assert.IsTrue(Driver.FindElement(By.LinkText("Mock Description")).Displayed);
+            Assert.IsTrue(Driver.FindElement(By.LinkText("Mock Url")).Displayed);
         }
 
         [TestCleanup()]

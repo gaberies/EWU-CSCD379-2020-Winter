@@ -24,7 +24,7 @@
                 <label class="label has-text-white">User</label>
                 <div class="select">
                     <select id="gift-select" v-model="clonedGift.userId">
-                        <option id="user-user.id" v-for="user in users" :value="user.id">
+                        <option :id="user.id" v-for="user in users" :value="user.id">
                             {{user.firstName}} {{user.lastName}}
                         </option>
                     </select>
