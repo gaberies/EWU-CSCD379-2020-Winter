@@ -35,32 +35,32 @@ namespace SecretSanta.Web.Tests
         private static int _MockUserId;
 
         [ClassInitialize]
-        public static async Task ClassInitialize(TestContext testContext)
+        public static void ClassInitialize(TestContext testContext)
         {
             ApiHostProcess = Process.Start("dotnet.exe", "run -p ..\\..\\..\\..\\..\\src\\SecretSanta.Api\\SecretSanta.Api.csproj");
             WebHostProcess = Process.Start("dotnet.exe", "run -p ..\\..\\..\\..\\..\\src\\SecretSanta.Web\\SecretSanta.Web.csproj");
             ApiHostProcess.WaitForExit(8000);
-
-            await GenerateUser();
         }
 
         public static async Task GenerateUser()
         {
+            // Arrange
+            using HttpClientHandler handler = new HttpClientHandler();
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+
             using HttpClient httpClient = new HttpClient();
             httpClient.BaseAddress = new Uri(AppUrl);
-            httpClient.DefaultRequestHeaders.Accept.Clear();
-            httpClient.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
 
-            UserClient userClient = new UserClient(httpClient);
+            IUserClient userClient = new UserClient(httpClient);
             UserInput userInput = new UserInput
             {
                 FirstName = "Test",
-                LastName = "User"
+                LastName = "User",
             };
 
-            User user = await userClient.PostAsync(userInput);
+            User user =  await userClient.PostAsync(userInput);
             _MockUserId = user.Id;
+
             httpClient.Dispose();
         }
 
@@ -121,8 +121,10 @@ namespace SecretSanta.Web.Tests
         }
 
         [TestMethod]
-        public void DoAssignment()
+        public async Task DoAssignment()
         {
+            await GenerateUser();
+
             Driver.Navigate().GoToUrl(new Uri(AppUrl));
             Driver.FindElement(By.Id("gifts-link")).Click();
             Driver.FindElement(By.Id("create-new-gift-button")).Click();
@@ -143,6 +145,8 @@ namespace SecretSanta.Web.Tests
             Assert.IsTrue(Driver.FindElement(By.LinkText("Mock Title")).Displayed);
             Assert.IsTrue(Driver.FindElement(By.LinkText("Mock Description")).Displayed);
             Assert.IsTrue(Driver.FindElement(By.LinkText("Mock Url")).Displayed);
+
+            await DeleteUser();
         }
 
         [TestCleanup()]
