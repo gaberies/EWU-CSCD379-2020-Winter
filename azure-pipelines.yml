@@ -21,12 +21,12 @@ steps:
 - task: Npm@1
   inputs:
     command: 'install'
-    workingDir: 'SecretSanta/src/SecretSanta.web'
+    workingDir: 'SecretSanta/src/SecretSanta.Web'
 
 - task: Npm@1
   inputs:
     command: 'custom'
-    workingDir: 'SecretSanta/src/SecretSanta.web'
+    workingDir: 'SecretSanta/src/SecretSanta.Web'
     customCommand: 'run build:prod'
 
 - task: DotNetCoreCLI@2
